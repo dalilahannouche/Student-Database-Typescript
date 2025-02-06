@@ -6,7 +6,6 @@ import data from './data.js'; // parce que le fichier exécuté sera index.js et
 //data est une chaîne de caractères, donc JSON.parse(data)
 // est nécessaire pour le transformer en objet utilisable
 const students = JSON.parse(data);
-console.log(students);
 function addRow(table, student) {
     //  Insère une nouvelle ligne (<tr>) dans le <tbody> de la table
     let tr = table.querySelector("tbody").insertRow();
@@ -38,12 +37,50 @@ function addRow(table, student) {
     }
     //  Ajoute la quatrième cellule (Statut d'inscription)
     const status = tr.insertCell();
-    status.appendChild(document.createTextNode(""));
+    if (student.dateRegistrationSuspended) {
+        status.appendChild(document.createTextNode("Active"));
+    }
+    else {
+        status.appendChild(document.createTextNode("Inactive"));
+    }
 }
 // select HTML table
 function selectTable() {
     return document.querySelector("#students-table"); // si on fait pas l'assertion
     // Typescript ne peut pas savoir si on va sélectionner une table ou autre dans le HTML"
 }
-// add a row
-addRow(selectTable(), students[0]);
+// Filter Students
+function filterStudents() {
+    const input = document.querySelector("#myInput");
+    const filter = input.value.toLowerCase(); // Convertir en minuscule pour un filtrage insensible à la casse
+    // Filtrer les étudiants en fonction du nom, de l'âge, de la spécialisation ou du statut d'inscription
+    const filteredStudents = students.filter(student => {
+        const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+        const age = (new Date().getFullYear() - parseInt(student.birthYear)).toString();
+        const focusArea = student.focusArea
+            ? (typeof student.focusArea === "string" ? student.focusArea : student.focusArea.join(", ")).toLowerCase()
+            : "";
+        const status = student.dateRegistrationSuspended ? "active" : "inactive";
+        return fullName.includes(filter) ||
+            age.includes(filter) ||
+            focusArea.includes(filter) ||
+            status.includes(filter);
+    });
+    // Rafraîchir le tableau avec les résultats filtrés
+    refreshTable(selectTable(), filteredStudents);
+}
+// Add all the students
+function refreshTable(table, students) {
+    table.querySelector("tbody").innerHTML = "";
+    students.forEach(student => {
+        // add a row
+        addRow(table, student);
+    });
+}
+//window.onload ne s'exécute qu'une fois tout le contenu de la page (y compris le HTML et les ressources 
+// associées comme les images et les styles CSS) est complètement chargé.
+// Cela garantit que #students-table est présent dans le DOM lorsque selectTable() est appelé.
+window.onload = function () {
+    refreshTable(selectTable(), students);
+    document.querySelector("#myInput").addEventListener("input", filterStudents);
+};

@@ -72,6 +72,29 @@ function selectTable() {
     // Typescript ne peut pas savoir si on va sélectionner une table ou autre dans le HTML"
 }
 
+// Filter Students
+
+function filterStudents() {
+    const input = <HTMLInputElement>document.querySelector("#myInput");
+    const filter = input.value.toLowerCase(); // Convertir en minuscule pour un filtrage insensible à la casse
+    
+    // Filtrer les étudiants en fonction du nom, de l'âge, de la spécialisation ou du statut d'inscription
+    const filteredStudents = students.filter(student => {
+        const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+        const age = (new Date().getFullYear() - parseInt(student.birthYear)).toString();
+        const focusArea = student.focusArea 
+            ? (typeof student.focusArea === "string" ? student.focusArea : student.focusArea.join(", ")).toLowerCase()
+            : "";
+        const status = student.dateRegistrationSuspended ? "active" : "inactive";
+
+        return fullName.includes(filter) || 
+               age.includes(filter) || 
+               focusArea.includes(filter) ||
+               status.includes(filter);
+    });
+     // Rafraîchir le tableau avec les résultats filtrés
+     refreshTable(selectTable(), filteredStudents);
+    }
 
 // Add all the students
 function refreshTable(table : HTMLTableElement, students : Student[]){
@@ -82,6 +105,11 @@ function refreshTable(table : HTMLTableElement, students : Student[]){
     })
 }
 
+//window.onload ne s'exécute qu'une fois tout le contenu de la page (y compris le HTML et les ressources 
+// associées comme les images et les styles CSS) est complètement chargé.
+// Cela garantit que #students-table est présent dans le DOM lorsque selectTable() est appelé.
 window.onload = function(){
-    refreshTable(selectTable(), students)
+    refreshTable(selectTable(), students);
+    document.querySelector("#myInput")!.addEventListener("input", filterStudents);
+
 }
