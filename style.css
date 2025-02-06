@@ -34,6 +34,7 @@ h1 {
 table {
     border-collapse: collapse;
     width: 100%;
+    margin-bottom: 150px;
   }
   
 td, th {
@@ -55,3 +56,12 @@ tr:nth-child(even) {
 background-color: #f3f3f3;
 }
 
+.footer{
+    background-color: #EE6E73;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+}
