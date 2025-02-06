@@ -8,7 +8,6 @@ import data from './data.js' ; // parce que le fichier exécuté sera index.js e
 //data est une chaîne de caractères, donc JSON.parse(data)
 // est nécessaire pour le transformer en objet utilisable
 const students = JSON.parse(data);
-console.log(students);
 
 
 
@@ -59,7 +58,12 @@ function addRow(table:HTMLTableElement, student:Student) {
 
     //  Ajoute la quatrième cellule (Statut d'inscription)
     const status = tr.insertCell();
-    status.appendChild(document.createTextNode(""));
+    if (student.dateRegistrationSuspended){
+        status.appendChild(document.createTextNode("Active"));
+    } else {
+        status.appendChild(document.createTextNode("Inactive"));
+    }
+    
 }
 
 // select HTML table
@@ -68,5 +72,16 @@ function selectTable() {
     // Typescript ne peut pas savoir si on va sélectionner une table ou autre dans le HTML"
 }
 
-// add a row
-addRow(selectTable(), students[0]);
+
+// Add all the students
+function refreshTable(table : HTMLTableElement, students : Student[]){
+    table.querySelector("tbody")!.innerHTML = "";
+    students.forEach(student=>{
+        // add a row
+        addRow(table, student);
+    })
+}
+
+window.onload = function(){
+    refreshTable(selectTable(), students)
+}
