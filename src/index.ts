@@ -92,7 +92,7 @@ function filterStudents() {
                focusArea.includes(filter) ||
                status.includes(filter);
     });
-     // Rafraîchir le tableau avec les résultats filtrés
+     // remplace le contenu du tableau avec seulement les étudiants qui correspondent à la recherche.
      refreshTable(selectTable(), filteredStudents);
     }
 
